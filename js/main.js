@@ -29,11 +29,35 @@ $(function () {
         });
 
         MyApp.Colleges.sort();
-                
+
         console.log(MyApp.Colleges);
         createDataTable();
+        addFilters();
     });
 })
+
+function addFilters(){
+    //College filter
+    var $colleges = $("#colleges");
+
+    $.each(MyApp.Colleges, function (key, val) {
+        $colleges.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    });
+
+    $(".filterrow").on("click", "ul.filterlist", function (e) {
+        var filterRegex = "";
+        $("input", this).each(function (key, val) {
+            if (val.checked) {
+                if (filterRegex.length !== 0) {
+                    filterRegex += "|";
+                }
+
+                filterRegex += "(" + val.name + ")";
+            }
+        });
+        MyApp.oTable.fnFilter(filterRegex, 1, true);
+    });
+}
 
 function createDataTable() {
     MyApp.oTable = $("#spreadsheet").dataTable({
