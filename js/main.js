@@ -61,6 +61,8 @@ function addFilters(){
 
 function createDataTable() {
     MyApp.oTable = $("#spreadsheet").dataTable({
+        "iDisplayLength": 20,
+        "bLengthChange": false,
         "aaData": MyApp.spreadsheetData,
         "aoColumns": MyApp.headerData
     });
