@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="container">
+        <div class="container-fluid">
 
             <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="hero-unit">
@@ -70,16 +70,16 @@
                 <p>Clientside searchable database pulled from Google Docs for CRC</p>                
             </div>
 
-            <div class="row filterrow">
-                <p>Colleges</p>
-                <ul id="colleges" class="unstyled filterlist">
-                </ul>
-            </div>            
-
-            <div class="row">
-                <table id="spreadsheet"></table>
+            <div class="row-fluid">
+                <div class="span2 filterrow well">
+                    <p class="lead">Colleges</p>
+                    <ul id="colleges" class="unstyled filterlist"></ul>
+                </div>
+                <div class="span10">
+                    <table id="spreadsheet"></table>            
+                </div>
             </div>
-
+                        
             <hr>
 
             <footer>
