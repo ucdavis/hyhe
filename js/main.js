@@ -1,4 +1,5 @@
-var sampleUrl = "https://docs.google.com/spreadsheet/pub?key=0AhcpJCFiGkDmdFZOSXpGMDVSa1N4NWJtRG8wWmx4YUE&single=true&gid=0&output=html";
+//var sampleUrl = "https://docs.google.com/spreadsheet/pub?key=0AhcpJCFiGkDmdFZOSXpGMDVSa1N4NWJtRG8wWmx4YUE&single=true&gid=0&output=html";
+var sampleUrl = "https://docs.google.com/spreadsheet/pub?key=0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c&single=true&gid=0&output=html";
 var spreadsheetData = [];
 var headerData = [];
         
@@ -7,7 +8,7 @@ $(function() {
     googleSpreadsheet.url(sampleUrl);
     googleSpreadsheet.load(function(result) {
         //break cells up into rows/cols by given column count
-        var colCount = 4;
+        var colCount = 7;
         for (var i = 0; i < result.data.length; i) {
             var row = [];
             for (var j = 0; j < colCount; j++) {
