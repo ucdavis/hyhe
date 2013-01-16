@@ -61,6 +61,9 @@ function addFilters(){
 
 function createDataTable() {
     MyApp.oTable = $("#spreadsheet").dataTable({
+        "aoColumnDefs": [
+            { "bVisible": false, "aTargets": [ -1 ] } //hide the keywords column for now (the last column, hence -1)
+        ],
         "iDisplayLength": 20,
         "bLengthChange": false,
         "aaData": MyApp.spreadsheetData,
