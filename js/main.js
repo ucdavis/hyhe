@@ -63,7 +63,7 @@ function addFilters(){
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
         var filterIndex = MyApp.filterIndexes[this.id];
-        console.log(filterIndex);
+
         $("input", this).each(function (key, val) {
             if (val.checked) {
                 if (filterRegex.length !== 0) {
@@ -73,6 +73,8 @@ function addFilters(){
                 filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match
             }
         });
+
+        displayCurrentFilters();
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
     });
 
@@ -85,6 +87,24 @@ function addFilters(){
                 
         $("ul.filterlist").click();
     });
+}
+
+function displayCurrentFilters(){
+    var filters = "";
+    $(":checked", "ul.filterlist").each(function () {
+        if (filters.length !== 0){
+            filters += " + "
+        }
+        filters += "<strong>" + this.name + "</strong>";        
+    });
+
+    if (filters.length !== 0){     
+        var alert = $("<div class='alert alert-info'><strong>Filters</strong><p>You are filtering on " + filters + "</p></div>")
+
+        $("#filters").html(alert);   
+    } else{
+        $("#filters").html(null);  
+    }
 }
 
 function createDataTable() {
