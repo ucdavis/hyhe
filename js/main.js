@@ -28,30 +28,33 @@ $(function () {
                     website, email,
                     val.gsx$keywords.$t
                 ]);
-
-            if ($.inArray(college, MyApp.Colleges) === -1) {
-                MyApp.Colleges.push(college);
-            }
-
-            if ($.inArray(researchTitle, MyApp.ResearchTitles) === -1 && researchTitle.length !== 0) {
-                MyApp.ResearchTitles.push(researchTitle);
-            }
-
-            if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {
-                MyApp.Departments.push(department);
-            }
         });
-
-        MyApp.Colleges.sort();
-        //MyApp.ResearchTitles.sort();
-        MyApp.Departments.sort();
-
+                
         createDataTable();
         addFilters();
     });
 })
 
 function addFilters(){
+    var filteredData = MyApp.oTable._('tr', {"filter":"applied"}); //Get all data in datatable, after filters
+    MyApp.Colleges = [], MyApp.Departments = [];
+
+    $.each(filteredData, function (key, val) {
+        var college = val[MyApp.filterIndexes["colleges"]];
+        var department = val[MyApp.filterIndexes["departments"]];
+
+        if ($.inArray(college, MyApp.Colleges) === -1) {
+            MyApp.Colleges.push(college);
+        }
+
+        if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {
+            MyApp.Departments.push(department);
+        }
+    });
+
+    MyApp.Colleges.sort();
+    MyApp.Departments.sort();
+        
     var $colleges = $("#colleges");
     var $departments = $("#departments");
 
@@ -77,8 +80,9 @@ function addFilters(){
             }
         });
 
-        displayCurrentFilters();
+        //Apply the filter, then update the filter alert
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
+        displayCurrentFilters();        
     });
 
     $("#clearfilters").click(function (e) {
