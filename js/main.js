@@ -7,7 +7,7 @@ MyApp.headerData = [
     { "sTitle": "Keywords"}
 ];
 
-MyApp.filterIndexes = { "colleges": 1, "researchtitles": 3 };
+MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
 
 $(function () {
@@ -34,13 +34,14 @@ $(function () {
                 MyApp.ResearchTitles.push(researchTitle);
             }
 
-            if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {                
+            if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {
                 MyApp.Departments.push(department);
             }
         });
 
         MyApp.Colleges.sort();
-        MyApp.ResearchTitles.sort();
+        //MyApp.ResearchTitles.sort();
+        MyApp.Departments.sort();
 
         createDataTable();
         addFilters();
@@ -48,16 +49,15 @@ $(function () {
 })
 
 function addFilters(){
-    //College filter
     var $colleges = $("#colleges");
-    var $researchtitles = $("#researchtitles");
+    var $departments = $("#departments");
 
     $.each(MyApp.Colleges, function (key, val) {
         $colleges.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
-    $.each(MyApp.ResearchTitles, function (key, val) {
-        $researchtitles.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    $.each(MyApp.Departments, function (key, val) {
+        $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
