@@ -43,7 +43,6 @@ $(function () {
         });
 
         MyApp.Colleges.sort();
-        //MyApp.ResearchTitles.sort();
         MyApp.Departments.sort();
 
         createDataTable();
@@ -51,17 +50,36 @@ $(function () {
     });
 })
 
+function populateFilteredDepartments(){
+    var fileredData = MyApp.oTable._('tr', {"filter":"applied"});
+
+    //Get departments available after the filters are set
+    MyApp.Departments = [];
+    $.each(fileredData, function (key, val) {
+        var department = val[MyApp.filterIndexes["departments"]];
+
+        if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {
+                MyApp.Departments.push(department);
+        }
+    });
+    MyApp.Departments.sort();
+
+    var $departments = $("#departments");
+    $departments.empty();
+    
+    $.each(MyApp.Departments, function (key, val) {
+        $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    });
+}
+
 function addFilters(){
     var $colleges = $("#colleges");
-    var $departments = $("#departments");
-
+    
     $.each(MyApp.Colleges, function (key, val) {
         $colleges.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
-    $.each(MyApp.Departments, function (key, val) {
-        $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
-    });
+    populateFilteredDepartments();
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
@@ -77,8 +95,9 @@ function addFilters(){
             }
         });
 
-        displayCurrentFilters();
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
+        populateFilteredDepartments();
+        displayCurrentFilters();
     });
 
     $("#clearfilters").click(function (e) {
