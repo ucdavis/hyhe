@@ -50,7 +50,7 @@ $(function () {
     });
 })
 
-function populateFilteredDepartments(){
+function hideUnavailableDepartments(){
     var fileredData = MyApp.oTable._('tr', {"filter":"applied"});
 
     //Get departments available after the filters are set
@@ -62,13 +62,14 @@ function populateFilteredDepartments(){
                 MyApp.Departments.push(department);
         }
     });
-    MyApp.Departments.sort();
 
-    var $departments = $("#departments");
-    $departments.empty();
-    
-    $.each(MyApp.Departments, function (key, val) {
-        $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    $(":checkbox", "#departments").each(function () {
+        //if a checkbox isn't in the list of available departments, hide it
+        if ($.inArray(this.name, MyApp.Departments) === -1) {
+            $(this).parent().css("display", "none");
+        } else {
+            $(this).parent().css("display", "block");
+        }
     });
 }
 
@@ -79,12 +80,17 @@ function addFilters(){
         $colleges.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
-    populateFilteredDepartments();
+    var $departments = $("#departments");
+    
+    $.each(MyApp.Departments, function (key, val) {
+        $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    });
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
         var filterIndex = MyApp.filterIndexes[this.id];
 
+        var filters = [];
         $("input", this).each(function (key, val) {
             if (val.checked) {
                 if (filterRegex.length !== 0) {
@@ -96,7 +102,7 @@ function addFilters(){
         });
 
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
-        populateFilteredDepartments();
+        hideUnavailableDepartments();
         displayCurrentFilters();
     });
 
