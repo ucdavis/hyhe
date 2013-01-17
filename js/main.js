@@ -18,13 +18,14 @@ $(function () {
             var researchTitle = val.gsx$researchertitle.$t;
             var department = val.gsx$department.$t;
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
+            var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
 
             MyApp.spreadsheetData.push(
 
                 [
                     val.gsx$researchername.$t, college,
                     department, researchTitle,
-                    website, val["gsx$e-mail"].$t,
+                    website, email,
                     val.gsx$keywords.$t
                 ]);
 
