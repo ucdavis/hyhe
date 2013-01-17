@@ -35,7 +35,7 @@ $(function () {
     });
 })
 
-function addFilters(){
+function populateFilterLists(){
     var filteredData = MyApp.oTable._('tr', {"filter":"applied"}); //Get all data in datatable, after filters
     MyApp.Colleges = [], MyApp.Departments = [];
 
@@ -53,10 +53,13 @@ function addFilters(){
     });
 
     MyApp.Colleges.sort();
-    MyApp.Departments.sort();
-        
+    MyApp.Departments.sort();    
+
     var $colleges = $("#colleges");
     var $departments = $("#departments");
+
+    $colleges.empty();
+    $departments.empty();
 
     $.each(MyApp.Colleges, function (key, val) {
         $colleges.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
@@ -64,7 +67,11 @@ function addFilters(){
 
     $.each(MyApp.Departments, function (key, val) {
         $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
-    });
+    });    
+}
+
+function addFilters(){
+    populateFilterLists();
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
@@ -82,7 +89,8 @@ function addFilters(){
 
         //Apply the filter, then update the filter alert
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
-        displayCurrentFilters();        
+        populateFilterLists();
+        displayCurrentFilters();
     });
 
     $("#clearfilters").click(function (e) {
