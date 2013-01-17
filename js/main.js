@@ -75,6 +75,16 @@ function addFilters(){
         });
         MyApp.oTable.fnFilter(filterRegex, filterIndex, true, false);
     });
+
+    $("#clearfilters").click(function (e) {
+        e.preventDefault();
+
+        $(":checkbox", "ul.filterlist").each(function () {
+            this.checked = false;
+        });
+                
+        $("ul.filterlist").click();
+    });
 }
 
 function createDataTable() {
