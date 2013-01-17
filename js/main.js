@@ -90,6 +90,7 @@ function addFilters(){
 }
 
 function displayCurrentFilters(){
+    var $filterAlert = $("#filters");
     var filters = "";
     $(":checked", "ul.filterlist").each(function () {
         if (filters.length !== 0){
@@ -101,10 +102,12 @@ function displayCurrentFilters(){
     if (filters.length !== 0){     
         var alert = $("<div class='alert alert-info'><strong>Filters</strong><p>You are filtering on " + filters + "</p></div>")
 
-        $("#filters").html(alert);   
+        $filterAlert.html(alert);   
     } else{
-        $("#filters").html(null);  
+        $filterAlert.html(null);  
     }
+
+    $filterAlert[0].scrollIntoView( true );
 }
 
 function createDataTable() {
