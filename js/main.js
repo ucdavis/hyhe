@@ -7,7 +7,7 @@ MyApp.headerData = [
     { "sTitle": "Keywords"}
 ];
 
-MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "keywords" : 4 };
+MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "keywords" : 6 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.Keywords = [];
 
 $(function () {
@@ -92,6 +92,12 @@ function addFilters(){
     
     $.each(MyApp.Departments, function (key, val) {
         $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    });
+
+    var $keywords = $("#keywords");
+
+    $.each(MyApp.Keywords, function (key, val) {
+        $keywords.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
