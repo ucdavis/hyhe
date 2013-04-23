@@ -102,8 +102,9 @@ function addFilters(){
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
-        var filterIndex = MyApp.filterIndexes[this.id];
-
+        var filterName = this.id;
+        var filterIndex = MyApp.filterIndexes[filterName];
+        
         var filters = [];
         $("input", this).each(function (key, val) {
             if (val.checked) {
@@ -111,7 +112,12 @@ function addFilters(){
                     filterRegex += "|";
                 }
 
-                filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match
+                if (filterName === "keywords") {
+                    //can match anywhere in keyword list, replace open/close parens with leading escape slash
+                    filterRegex += "(" + val.name.replace("(", "\\(").replace(")", "\\)") + ")";
+                } else {
+                    filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match
+                }
             }
         });
 
