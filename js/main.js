@@ -7,8 +7,8 @@ MyApp.headerData = [
     { "sTitle": "Keywords"}
 ];
 
-MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3 };
-MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
+MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "keywords" : 4 };
+MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.Keywords = [];
 
 $(function () {
     var url = "https://spreadsheets.google.com/feeds/list/0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c/1/public/values?alt=json-in-script&callback=?";
@@ -19,14 +19,14 @@ $(function () {
             var department = val.gsx$department.$t;
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
+            var keywords = val.gsx$keywords.$t;
 
             MyApp.spreadsheetData.push(
-
                 [
                     val.gsx$researchername.$t, college,
                     department, researchTitle,
                     website, email,
-                    val.gsx$keywords.$t
+                    keywords
                 ]);
 
             if ($.inArray(college, MyApp.Colleges) === -1) {
@@ -40,6 +40,14 @@ $(function () {
             if ($.inArray(department, MyApp.Departments) === -1 && department.length !== 0) {
                 MyApp.Departments.push(department);
             }
+
+            //Add the keywords, which are common separated. First trim them and then replace the CRLF, then split by comma.       
+            $.each(keywords.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(','), function (key, val) {
+                val = val.trim(); //need to trim the comma separated values after split
+                if ($.inArray(val, MyApp.Keywords) === -1 && val.length !== 0) {
+                    MyApp.Keywords.push(val);
+                }
+            });
         });
 
         MyApp.Colleges.sort();
@@ -141,7 +149,7 @@ function displayCurrentFilters(){
 function createDataTable() {
     MyApp.oTable = $("#spreadsheet").dataTable({
         "aoColumnDefs": [
-            { "bVisible": false, "aTargets": [ -1 ] } //hide the keywords column for now (the last column, hence -1)
+            { "bVisible": true, "aTargets": [ -1 ] } //hide the keywords column for now (the last column, hence -1)
         ],
         "iDisplayLength": 20,
         "bLengthChange": false,
