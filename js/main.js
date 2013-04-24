@@ -1,8 +1,8 @@
 MyApp = {};
 MyApp.spreadsheetData = [];
 MyApp.headerData = [
-    { "sTitle": "Researcher Name" }, { "sTitle": "Campus/College" }, 
-    { "sTitle": "Department/Program"}, { "sTitle": "Researcher Title"}, 
+    { "sTitle": "Researcher Name" }, { "sTitle": "Campus/ College" }, 
+    { "sTitle": "Department/ Program"}, { "sTitle": "Researcher Title"}, 
     { "sTitle": "Website"}, { "sTitle": "Email"}, 
     { "sTitle": "Research Area"}
 ];
