@@ -1,32 +1,32 @@
 MyApp = {};
 MyApp.spreadsheetData = [];
 MyApp.headerData = [
-    { "sTitle": "Researcher Name" }, { "sTitle": "College" }, 
-    { "sTitle": "Department"}, { "sTitle": "Researcher Title"}, 
+    { "sTitle": "Researcher Name" }, { "sTitle": "Campus/College" }, 
+    { "sTitle": "Department/Program"}, { "sTitle": "Researcher Title"}, 
     { "sTitle": "Website"}, { "sTitle": "Email"}, 
-    { "sTitle": "Keywords"}
+    { "sTitle": "Research Area"}
 ];
 
-MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "keywords" : 6 };
-MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.Keywords = [];
+MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
+MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.ResearchAreas = [];
 
 $(function () {
     var url = "https://spreadsheets.google.com/feeds/list/0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c/1/public/values?alt=json-in-script&callback=?";
     $.getJSON(url, {}, function (data) {
         $.each(data.feed.entry, function (key, val) {
-            var college = val.gsx$college.$t;
+            var college = val.gsx$campuscollege.$t;
             var researchTitle = val.gsx$researchertitle.$t;
-            var department = val.gsx$department.$t;
+            var department = val.gsx$departmentprogram.$t;
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
-            var keywords = val.gsx$keywords.$t;
+            var researcharea = val.gsx$researcharea.$t;
 
             MyApp.spreadsheetData.push(
                 [
                     val.gsx$researchername.$t, college,
                     department, researchTitle,
                     website, email,
-                    keywords
+                    researcharea
                 ]);
 
             if ($.inArray(college, MyApp.Colleges) === -1) {
@@ -42,16 +42,17 @@ $(function () {
             }
 
             //Add the keywords, which are common separated. First trim them and then replace the CRLF, then split by comma.       
-            $.each(keywords.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(','), function (key, val) {
+            $.each(researcharea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(','), function (key, val) {
                 val = val.trim(); //need to trim the comma separated values after split
-                if ($.inArray(val, MyApp.Keywords) === -1 && val.length !== 0) {
-                    MyApp.Keywords.push(val);
+                if ($.inArray(val, MyApp.ResearchAreas) === -1 && val.length !== 0) {
+                    MyApp.ResearchAreas.push(val);
                 }
             });
         });
 
         MyApp.Colleges.sort();
         MyApp.Departments.sort();
+        MyApp.ResearchAreas.sort();
 
         createDataTable();
         addFilters();
@@ -94,10 +95,10 @@ function addFilters(){
         $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
-    var $keywords = $("#keywords");
+    var $researcharea = $("#researcharea");
 
-    $.each(MyApp.Keywords, function (key, val) {
-        $keywords.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    $.each(MyApp.ResearchAreas, function (key, val) {
+        $researcharea.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
@@ -112,7 +113,7 @@ function addFilters(){
                     filterRegex += "|";
                 }
 
-                if (filterName === "keywords") {
+                if (filterName === "researcharea") {
                     //can match anywhere in keyword list, replace open/close parens with leading escape slash
                     filterRegex += "(" + val.name.replace("(", "\\(").replace(")", "\\)") + ")";
                 } else {
