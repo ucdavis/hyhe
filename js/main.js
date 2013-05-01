@@ -7,8 +7,14 @@ MyApp.headerData = [
     { "sTitle": "Research Area"}
 ];
 
+MyApp.ResearchAreaCategories = { 
+    "researchareapopulations": { name: "Populations", values: [] }, 
+    "researcharealifephase": { name: "Life Phases", values: [] }, 
+    "researchareaother": { name: "Other", values: [] } 
+};
+
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
-MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.ResearchAreas = [];
+MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
 
 $(function () {
     var url = "https://spreadsheets.google.com/feeds/list/0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c/1/public/values?alt=json-in-script&callback=?";
@@ -19,14 +25,15 @@ $(function () {
             var department = val.gsx$departmentprogram.$t;
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
-            var researcharea = val.gsx$researcharea.$t;
+
+            var allResearchAreas = val.gsx$researchareapopulations.$t + ';' + val.gsx$researcharealifephase.$t + ';' + val.gsx$researchareaother.$t;
 
             MyApp.spreadsheetData.push(
                 [
                     val.gsx$researchername.$t, college,
                     department, researchTitle,
                     website, email,
-                    researcharea
+                    allResearchAreas
                 ]);
 
             if ($.inArray(college, MyApp.Colleges) === -1) {
@@ -41,18 +48,23 @@ $(function () {
                 MyApp.Departments.push(department);
             }
 
-            //Add the keywords, which are common separated. First trim them and then replace the CRLF, then split by comma.       
-            $.each(researcharea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(','), function (key, val) {
-                val = val.trim(); //need to trim the comma separated values after split
-                if ($.inArray(val, MyApp.ResearchAreas) === -1 && val.length !== 0) {
-                    MyApp.ResearchAreas.push(val);
-                }
+            $.each(MyApp.ResearchAreaCategories, function (researchAreaName, researchAreaCollection) {
+                var researchArea = val["gsx$" + researchAreaName].$t;
+
+                //Add the keywords, which are semi-colon separated. First trim them and then replace the CRLF, then split.
+                $.each(researchArea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
+                    val = val.trim(); //need to trim the semi-colon separated values after split
+                    if ($.inArray(val, researchAreaCollection.values) === -1 && val.length !== 0) {
+                        researchAreaCollection.values.push(val);
+                    }
+                });
+
+                researchAreaCollection.values.sort();
             });
         });
 
         MyApp.Colleges.sort();
         MyApp.Departments.sort();
-        MyApp.ResearchAreas.sort();
 
         createDataTable();
         addFilters();
@@ -95,10 +107,32 @@ function addFilters(){
         $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
+    //Create a select box with all research areas by category
     var $researcharea = $("#researcharea");
 
-    $.each(MyApp.ResearchAreas, function (key, val) {
-        $researcharea.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    var researchSelect = "<select id='researchfilter'><option value=''>--No Research Area Filter--</option>";
+
+    $.each(MyApp.ResearchAreaCategories, function (category, researchAreaCollection) {
+        researchSelect += "<optgroup label='" + researchAreaCollection.name + "'>";
+        $.each(researchAreaCollection.values, function (k, researchArea) {
+            researchSelect += "<option>" + researchArea + "</option>";
+        });
+        researchSelect += "</optgroup>";
+    });
+
+    researchSelect += "</select>";
+
+    $researcharea.append(researchSelect);
+
+    $("#researcharea").on("change", "#researchfilter", function (e) {
+        var selected = $("#researchfilter").val();
+
+        //can match anywhere in keyword list, replace open/close parens with leading escape slash
+        var filterRegex = "(" + selected.replace("(", "\\(").replace(")", "\\)") + ")";
+
+        MyApp.oTable.fnFilter(filterRegex, MyApp.filterIndexes["researcharea"], true, false);
+        hideUnavailableDepartments();
+        displayCurrentFilters();
     });
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
@@ -113,12 +147,7 @@ function addFilters(){
                     filterRegex += "|";
                 }
 
-                if (filterName === "researcharea") {
-                    //can match anywhere in keyword list, replace open/close parens with leading escape slash
-                    filterRegex += "(" + val.name.replace("(", "\\(").replace(")", "\\)") + ")";
-                } else {
-                    filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match
-                }
+                filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match                
             }
         });
 
@@ -133,14 +162,22 @@ function addFilters(){
         $(":checkbox", "ul.filterlist").each(function () {
             this.checked = false;
         });
-                
+
+        $("#researchfilter").val(0);
+
         $("ul.filterlist").click();
     });
 }
 
 function displayCurrentFilters(){
     var $filterAlert = $("#filters");
+    var researchFilter = $("#researchfilter").val();
     var filters = "";
+
+    if (researchFilter){
+        filters += "<strong>" + researchFilter + "</strong>";
+    }
+
     $(":checked", "ul.filterlist").each(function () {
         if (filters.length !== 0){
             filters += " + "
