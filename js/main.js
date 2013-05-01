@@ -7,7 +7,7 @@ MyApp.headerData = [
     { "sTitle": "Research Area"}
 ];
 
-MyApp.ResearchAreas = { "researchareapopulations": [], "researcharealifephase": [], "researchareaother": [] };
+MyApp.ResearchAreaCategories = { "researchareapopulations": [], "researcharealifephase": [], "researchareaother": [] };
 
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.ResearchAreas = [];
@@ -22,15 +22,14 @@ $(function () {
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
 
-            var researcharea = val.gsx$researchareapopulations.$t + ';' + val.gsx$researcharealifephase.$t + ';' + val.gsx$researchareaother.$t;
+            var allResearchAreas = val.gsx$researchareapopulations.$t + ';' + val.gsx$researcharealifephase.$t + ';' + val.gsx$researchareaother.$t;
 
-            console.log(researcharea);
             MyApp.spreadsheetData.push(
                 [
                     val.gsx$researchername.$t, college,
                     department, researchTitle,
                     website, email,
-                    researcharea
+                    allResearchAreas
                 ]);
 
             if ($.inArray(college, MyApp.Colleges) === -1) {
@@ -45,12 +44,17 @@ $(function () {
                 MyApp.Departments.push(department);
             }
 
-            //Add the keywords, which are semi-colon separated. First trim them and then replace the CRLF, then split.
-            $.each(researcharea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
-                val = val.trim(); //need to trim the semi-colon separated values after split
-                if ($.inArray(val, MyApp.ResearchAreas) === -1 && val.length !== 0) {
-                    MyApp.ResearchAreas.push(val);
-                }
+            $.each(MyApp.ResearchAreaCategories, function (researchAreaName, researchAreaCollection) {
+                var researchArea = val["gsx$" + researchAreaName].$t;
+
+                //Add the keywords, which are semi-colon separated. First trim them and then replace the CRLF, then split.
+                $.each(researchArea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
+                    val = val.trim(); //need to trim the semi-colon separated values after split
+                    if ($.inArray(val, researchAreaCollection) === -1 && val.length !== 0) {
+                        researchAreaCollection.push(val);
+                        //MyApp.ResearchAreas.push(val);
+                    }
+                });
             });
         });
 
