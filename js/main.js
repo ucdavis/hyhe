@@ -7,6 +7,8 @@ MyApp.headerData = [
     { "sTitle": "Research Area"}
 ];
 
+MyApp.ResearchAreas = { "researchareapopulations": [], "researcharealifephase": [], "researchareaother": [] };
+
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.ResearchAreas = [];
 
@@ -19,8 +21,10 @@ $(function () {
             var department = val.gsx$departmentprogram.$t;
             var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
-            var researcharea = val.gsx$researcharea.$t;
 
+            var researcharea = val.gsx$researchareapopulations.$t + ';' + val.gsx$researcharealifephase.$t + ';' + val.gsx$researchareaother.$t;
+
+            console.log(researcharea);
             MyApp.spreadsheetData.push(
                 [
                     val.gsx$researchername.$t, college,
@@ -41,9 +45,9 @@ $(function () {
                 MyApp.Departments.push(department);
             }
 
-            //Add the keywords, which are common separated. First trim them and then replace the CRLF, then split by comma.       
-            $.each(researcharea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(','), function (key, val) {
-                val = val.trim(); //need to trim the comma separated values after split
+            //Add the keywords, which are semi-colon separated. First trim them and then replace the CRLF, then split.
+            $.each(researcharea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
+                val = val.trim(); //need to trim the semi-colon separated values after split
                 if ($.inArray(val, MyApp.ResearchAreas) === -1 && val.length !== 0) {
                     MyApp.ResearchAreas.push(val);
                 }
