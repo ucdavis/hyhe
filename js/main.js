@@ -7,7 +7,11 @@ MyApp.headerData = [
     { "sTitle": "Research Area"}
 ];
 
-MyApp.ResearchAreaCategories = { "researchareapopulations": [], "researcharealifephase": [], "researchareaother": [] };
+MyApp.ResearchAreaCategories = { 
+    "researchareapopulations": { name: "Populations", values: [] }, 
+    "researcharealifephase": { name: "Life Phases", values: [] }, 
+    "researchareaother": { name: "Other", values: [] } 
+};
 
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
@@ -50,12 +54,12 @@ $(function () {
                 //Add the keywords, which are semi-colon separated. First trim them and then replace the CRLF, then split.
                 $.each(researchArea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
                     val = val.trim(); //need to trim the semi-colon separated values after split
-                    if ($.inArray(val, researchAreaCollection) === -1 && val.length !== 0) {
-                        researchAreaCollection.push(val);
+                    if ($.inArray(val, researchAreaCollection.values) === -1 && val.length !== 0) {
+                        researchAreaCollection.values.push(val);
                     }
                 });
 
-                researchAreaCollection.sort();
+                researchAreaCollection.values.sort();
             });
         });
 
@@ -109,8 +113,8 @@ function addFilters(){
     var researchSelect = "<select id='researchfilter'><option value=''>--No Research Area Filter--</option>";
 
     $.each(MyApp.ResearchAreaCategories, function (category, researchAreaCollection) {
-        researchSelect += "<optgroup label='" + category + "'>";
-        $.each(researchAreaCollection, function (k, researchArea) {
+        researchSelect += "<optgroup label='" + researchAreaCollection.name + "'>";
+        $.each(researchAreaCollection.values, function (k, researchArea) {
             researchSelect += "<option>" + researchArea + "</option>";
         });
         researchSelect += "</optgroup>";
