@@ -30,7 +30,7 @@ $(function () {
 
             MyApp.spreadsheetData.push(
                 [
-                    val.gsx$researchername.$t, college,
+                    GenerateResearcherColumn(val), college,
                     department, researchTitle,
                     website, email,
                     allResearchAreas
@@ -68,6 +68,7 @@ $(function () {
 
         createDataTable();
         addFilters();
+        researcherPopup();
     });
 })
 
@@ -167,6 +168,24 @@ function addFilters(){
 
         $("ul.filterlist").click();
     });
+}
+
+function researcherPopup(){
+    $("#spreadsheet").popover({ 
+        selector: '.researcher-popover',
+        trigger: 'hover'
+    });    
+}
+
+function GenerateResearcherColumn(val /* entry value from spreadsheet */){
+    var name = val.gsx$researchername.$t;
+    var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
+    var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
+    var research = val.gsx$research.$t;
+
+    var content = research;
+    var researcher = "<a href='#' class='researcher-popover' data-toggle='popover' data-content='" + research + "' data-original-title='" + name + "'>" + name + "</a>";
+    return researcher;
 }
 
 function displayCurrentFilters(){
