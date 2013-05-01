@@ -126,7 +126,7 @@ function addFilters(){
         //can match anywhere in keyword list, replace open/close parens with leading escape slash
         var filterRegex = "(" + selected.replace("(", "\\(").replace(")", "\\)") + ")";
 
-        MyApp.oTable.fnFilter(filterRegex, MyApp.filterIndexes["researchareas"], true, false);
+        MyApp.oTable.fnFilter(filterRegex, MyApp.filterIndexes["researcharea"], true, false);
         hideUnavailableDepartments();
         displayCurrentFilters();
     });
