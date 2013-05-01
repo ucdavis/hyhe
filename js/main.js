@@ -16,6 +16,10 @@ MyApp.ResearchAreaCategories = {
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
 MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
 
+String.prototype.trunc = function (n) {
+    return this.substr(0, n - 1) + (this.length > n ? '&hellip;' : '');
+};
+
 $(function () {
     var url = "https://spreadsheets.google.com/feeds/list/0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c/1/public/values?alt=json-in-script&callback=?";
     $.getJSON(url, {}, function (data) {
@@ -23,14 +27,14 @@ $(function () {
             var college = val.gsx$campuscollege.$t;
             var researchTitle = val.gsx$researchertitle.$t;
             var department = val.gsx$departmentprogram.$t;
-            var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
+            var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t.trunc(25) + "</a>";
             var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
 
             var allResearchAreas = val.gsx$researchareapopulations.$t + ';' + val.gsx$researcharealifephase.$t + ';' + val.gsx$researchareaother.$t;
 
             MyApp.spreadsheetData.push(
                 [
-                    val.gsx$researchername.$t, college,
+                    GenerateResearcherColumn(val), college,
                     department, researchTitle,
                     website, email,
                     allResearchAreas
@@ -68,6 +72,7 @@ $(function () {
 
         createDataTable();
         addFilters();
+        researcherPopup();
     });
 })
 
@@ -167,6 +172,24 @@ function addFilters(){
 
         $("ul.filterlist").click();
     });
+}
+
+function researcherPopup(){
+    $("#spreadsheet").popover({ 
+        selector: '.researcher-popover',
+        trigger: 'hover'
+    });
+}
+
+function GenerateResearcherColumn(val /* entry value from spreadsheet */){
+    var name = val.gsx$researchername.$t;
+    //var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
+    //var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
+    var research = val.gsx$research.$t;
+
+    var content = research; //could expand content later
+    var researcher = "<a href='#' class='researcher-popover' data-toggle='popover' data-content='" + research + "' data-original-title='" + name + "'>" + name + "</a>";
+    return researcher;
 }
 
 function displayCurrentFilters(){
