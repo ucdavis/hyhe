@@ -105,7 +105,7 @@ function addFilters(){
     //Create a select box with all research areas by category
     var $researcharea = $("#researcharea");
 
-    var researchSelect = "<select><option>--No Research Area Filter--</option>";
+    var researchSelect = "<select id='researchfilter'><option value='0'>--No Research Area Filter--</option>";
 
     $.each(MyApp.ResearchAreaCategories, function (category, researchAreaCollection) {
         researchSelect += "<optgroup label='" + category + "'>";
@@ -119,6 +119,17 @@ function addFilters(){
 
     $researcharea.append(researchSelect);
 
+    $("#researcharea").on("change", "#researchfilter", function (e) {
+        var selected = $("#researchfilter").val();
+
+        //can match anywhere in keyword list, replace open/close parens with leading escape slash
+        var filterRegex = "(" + selected.replace("(", "\\(").replace(")", "\\)") + ")";
+
+        MyApp.oTable.fnFilter(filterRegex, MyApp.filterIndexes["researchareas"], true, false);
+        hideUnavailableDepartments();
+        displayCurrentFilters();
+    });
+
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
         var filterName = this.id;
@@ -131,12 +142,7 @@ function addFilters(){
                     filterRegex += "|";
                 }
 
-                if (filterName === "researcharea") {
-                    //can match anywhere in keyword list, replace open/close parens with leading escape slash
-                    filterRegex += "(" + val.name.replace("(", "\\(").replace(")", "\\)") + ")";
-                } else {
-                    filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match
-                }
+                filterRegex += "(^" + val.name + "$)"; //Use the hat and dollar to require an exact match                
             }
         });
 
