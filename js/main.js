@@ -51,8 +51,7 @@ $(function () {
                 $.each(researchArea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
                     val = val.trim(); //need to trim the semi-colon separated values after split
                     if ($.inArray(val, researchAreaCollection) === -1 && val.length !== 0) {
-                        researchAreaCollection.push(val);
-                        //MyApp.ResearchAreas.push(val);
+                        researchAreaCollection.push(val);                        
                     }
                 });
             });
@@ -103,11 +102,22 @@ function addFilters(){
         $departments.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
     });
 
+    //Create a select box with all research areas by category
     var $researcharea = $("#researcharea");
 
-    $.each(MyApp.ResearchAreas, function (key, val) {
-        $researcharea.append('<li><label><input type="checkbox" name="' + val + '"> ' + val + '</label></li>');
+    var researchSelect = "<select><option>--No Research Area Filter--</option>";
+
+    $.each(MyApp.ResearchAreaCategories, function (category, researchAreaCollection) {
+        researchSelect += "<optgroup label='" + category + "'>";
+        $.each(researchAreaCollection, function (k, researchArea) {
+            researchSelect += "<option>" + researchArea + "</option>";
+        });
+        researchSelect += "</optgroup>";
     });
+
+    researchSelect += "</select>";
+
+    $researcharea.append(researchSelect);
 
     $(".filterrow").on("click", "ul.filterlist", function (e) {
         var filterRegex = "";
