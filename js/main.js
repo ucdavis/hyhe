@@ -10,7 +10,7 @@ MyApp.headerData = [
 MyApp.ResearchAreaCategories = { "researchareapopulations": [], "researcharealifephase": [], "researchareaother": [] };
 
 MyApp.filterIndexes = { "colleges": 1, "departments": 2, "researchtitles": 3, "researcharea" : 6 };
-MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [], MyApp.ResearchAreas = [];
+MyApp.Colleges = [], MyApp.ResearchTitles = [], MyApp.Departments = [];
 
 $(function () {
     var url = "https://spreadsheets.google.com/feeds/list/0AhTxmYCYi3fpdHI5RnliaG1yMGZxeEVTYnJXc1Fxb3c/1/public/values?alt=json-in-script&callback=?";
@@ -51,15 +51,16 @@ $(function () {
                 $.each(researchArea.trim().replace(/^[\r\n]+|\.|[\r\n]+$/g, "").split(';'), function (key, val) {
                     val = val.trim(); //need to trim the semi-colon separated values after split
                     if ($.inArray(val, researchAreaCollection) === -1 && val.length !== 0) {
-                        researchAreaCollection.push(val);                        
+                        researchAreaCollection.push(val);
                     }
                 });
+
+                researchAreaCollection.sort();
             });
         });
 
         MyApp.Colleges.sort();
         MyApp.Departments.sort();
-        MyApp.ResearchAreas.sort();
 
         createDataTable();
         addFilters();
@@ -105,7 +106,7 @@ function addFilters(){
     //Create a select box with all research areas by category
     var $researcharea = $("#researcharea");
 
-    var researchSelect = "<select id='researchfilter'><option value='0'>--No Research Area Filter--</option>";
+    var researchSelect = "<select id='researchfilter'><option value=''>--No Research Area Filter--</option>";
 
     $.each(MyApp.ResearchAreaCategories, function (category, researchAreaCollection) {
         researchSelect += "<optgroup label='" + category + "'>";
@@ -157,14 +158,22 @@ function addFilters(){
         $(":checkbox", "ul.filterlist").each(function () {
             this.checked = false;
         });
-                
+
+        $("#researchfilter").val(0);
+
         $("ul.filterlist").click();
     });
 }
 
 function displayCurrentFilters(){
     var $filterAlert = $("#filters");
+    var researchFilter = $("#researchfilter").val();
     var filters = "";
+
+    if (researchFilter){
+        filters += "<strong>" + researchFilter + "</strong>";
+    }
+
     $(":checked", "ul.filterlist").each(function () {
         if (filters.length !== 0){
             filters += " + "
