@@ -8,8 +8,8 @@ MyApp.headerData = [
 ];
 
 MyApp.ResearchAreaCategories = { 
-    "researchareapopulations": { name: "Populations", values: [] }, 
-    "researcharealifephase": { name: "Life Phases", values: [] }, 
+    "researchareapopulations": { name: "Populations defined by…", values: [] }, 
+    "researcharealifephase": { name: "Life Phase", values: [] }, 
     "researchareaother": { name: "Other", values: [] } 
 };
 
