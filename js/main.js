@@ -183,12 +183,14 @@ function researcherPopup(){
 
 function GenerateResearcherColumn(val /* entry value from spreadsheet */){
     var name = val.gsx$researchername.$t;
+        
     //var website = "<a target='_blank' href='" + val.gsx$website.$t + "'>" + val.gsx$website.$t + "</a>";
     //var email = "<a href='mailto:" + val["gsx$e-mail"].$t + "'>" + val["gsx$e-mail"].$t + "</a>";
     var research = val.gsx$research.$t;
 
     var content = research; //could expand content later
     var researcher = "<a href='#' class='researcher-popover' data-toggle='popover' data-content='" + research + "' data-original-title='" + name + "'>" + name + "</a>";
+        
     return researcher;
 }
 
@@ -220,8 +222,24 @@ function displayCurrentFilters(){
 }
 
 function createDataTable() {
+    //Create a sorter that uses case-insensitive html content
+    jQuery.extend(jQuery.fn.dataTableExt.oSort, {
+        "link-content-pre": function (a) {
+            return $(a).html().trim().toLowerCase();
+        },
+
+        "link-content-asc": function (a, b) {
+            return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+        },
+
+        "link-content-desc": function (a, b) {
+            return ((a < b) ? 1 : ((a > b) ? -1 : 0));
+        }
+    });
+
     MyApp.oTable = $("#spreadsheet").dataTable({
         "aoColumnDefs": [
+            { "sType": "link-content", "aTargets": [ 0, 4, 5 ] },
             { "bVisible": false, "aTargets": [ -1 ] } //hide the keywords column for now (the last column, hence -1)
         ],
         "iDisplayLength": 20,
